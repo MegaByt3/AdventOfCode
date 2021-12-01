@@ -7,10 +7,11 @@ namespace AdventOfCode2021
     // https://adventofcode.com/2021/day/1
     public class Day01 : BaseDay<int>
     {
-        private const string Year = "2021";
-        private const string Day = "01";
+        protected override string Year => "2021";
+        protected override string Day => "01";
+        protected override int[] Inputs { get; set; }
+        
         private const int WindowRange = 3;
-        private int[] _inputs;
 
         public IInputManager InputManager { get; }
 
@@ -22,16 +23,16 @@ namespace AdventOfCode2021
 
         private void Init(string year, string day)
         {
-            _inputs = InputManager.GetInputs<int>(year, day).ToArray();
+            Inputs = InputManager.GetInputs<int>(year, day).ToArray();
         }
 
         public override object SolvePart1()
         {
             var result = 0;
 
-            for (int i = 0; i < _inputs.Length - 1; i++)
+            for (int i = 0; i < Inputs.Length - 1; i++)
             {
-                if (_inputs[i + 1] > _inputs[i]) result++;
+                if (Inputs[i + 1] > Inputs[i]) result++;
             }
 
             return result;
@@ -40,11 +41,11 @@ namespace AdventOfCode2021
         public override object SolvePart2()
         {
             var result = 0;
-            var previousWindowSum = _inputs[0..WindowRange].Sum();
+            var previousWindowSum = Inputs[0..WindowRange].Sum();
 
-            for (int i = 0; i < _inputs.Length - WindowRange; i++)
+            for (int i = 0; i < Inputs.Length - WindowRange; i++)
             {
-                var nextWindowSum = _inputs[(i + 1)..(i + 1 + WindowRange)].Sum();
+                var nextWindowSum = Inputs[(i + 1)..(i + 1 + WindowRange)].Sum();
                 if (nextWindowSum > previousWindowSum) result++;
                 previousWindowSum = nextWindowSum;
             }
