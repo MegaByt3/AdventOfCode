@@ -5,11 +5,11 @@ using AdventOfCode.Helpers;
 namespace AdventOfCode2021
 {
     // https://adventofcode.com/2021/day/1
-    public class Day01 : BaseDay<int>
+    public class Day01 : BaseDay
     {
         protected override string Year => "2021";
         protected override string Day => "01";
-        protected override int[] Inputs { get; set; }
+        protected int[] Inputs { get; set; }
         
         private const int WindowRange = 3;
 
