@@ -44,7 +44,7 @@ namespace AdventOfCode2021
             .Select(x => new
             {
                 x.Key.direction,
-                distance = x.Select(y => y.distance),
+                distances = x.Select(y => y.distance),
             });
 
             foreach (var directionGroup in directionGroups)
@@ -52,13 +52,13 @@ namespace AdventOfCode2021
                 switch (directionGroup.direction)
                 {
                     case "forward":
-                        horizontalPosition += directionGroup.distance.Sum();
+                        horizontalPosition += directionGroup.distances.Sum();
                         break;
                     case "down":
-                        depth += directionGroup.distance.Sum();
+                        depth += directionGroup.distances.Sum();
                         break;
                     case "up":
-                        depth -= directionGroup.distance.Sum();
+                        depth -= directionGroup.distances.Sum();
                         break;
                     default:
                         throw new ArgumentException("Invalid direction");
