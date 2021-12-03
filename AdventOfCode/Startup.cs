@@ -24,7 +24,7 @@ namespace AdventOfCode
             var day = Configuration.GetValue<string>("PuzzleSelection:Day");
 
             var type = Type.GetType($"AdventOfCode{year}.Day{day}");
-            var puzzle = (IDay)Activator.CreateInstance(type, InputManager);
+            var puzzle = (IDay)Activator.CreateInstance(type, InputManager, Logger);
 
             Console.WriteLine($"Solving puzzle for year {year} day {day}:");
 
