@@ -13,11 +13,11 @@ namespace AdventOfCode2021
     {
         protected override string Year => "2021";
         protected override string Day => "03";
-        protected List<BitArray> Inputs { get; set; }
 
         public IInputManager InputManager { get; }
         public ILogger Logger { get; }
 
+        private List<BitArray> Inputs { get; set; }
         private int _inputLength;
 
         public Day03(IInputManager inputManager, ILogger logger)

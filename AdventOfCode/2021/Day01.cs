@@ -9,9 +9,10 @@ namespace AdventOfCode2021
     {
         protected override string Year => "2021";
         protected override string Day => "01";
-        protected int[] Inputs { get; set; }
         
         private const int WindowRange = 3;
+
+        private int[] Inputs { get; set; }
 
         public IInputManager InputManager { get; }
 

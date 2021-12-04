@@ -11,9 +11,10 @@ namespace AdventOfCode2021
     {
         protected override string Year => "2021";
         protected override string Day => "02";
-        protected List<(string direction, int distance)> Inputs { get; set; }
 
         public IInputManager InputManager { get; }
+
+        private List<(string direction, int distance)> Inputs { get; set; }
 
         public Day02(IInputManager inputManager)
         {
