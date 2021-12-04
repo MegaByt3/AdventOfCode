@@ -25,12 +25,16 @@ namespace AdventOfCode
             var day = Configuration.GetValue<string>("PuzzleSelection:Day");
 
             var type = Type.GetType($"AdventOfCode{year}.Day{day}");
-            var puzzle = (IDay)Activator.CreateInstance(type, InputManager, Logger);
 
             Console.WriteLine($"Solving puzzle for year {year} day {day}:");
 
             var sw = new Stopwatch();
             sw.Start();
+
+            var puzzle = (IDay)Activator.CreateInstance(type, InputManager, Logger);
+
+            Console.WriteLine($"Compute time initializing: {sw.Elapsed:c}");
+            sw.Restart();
 
             var resultPart1 = puzzle.SolvePart1();
             Console.WriteLine($"Part1 result: {resultPart1}");
