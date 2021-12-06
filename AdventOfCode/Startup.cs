@@ -24,7 +24,7 @@ namespace AdventOfCode
             var year = Configuration.GetValue<string>("PuzzleSelection:Year");
             var day = Configuration.GetValue<string>("PuzzleSelection:Day");
 
-            var type = Type.GetType($"AdventOfCode{year}.Day{day}");
+            var type = Type.GetType($"AdventOfCode{year}.Day{day}.Day{day}");
 
             Console.WriteLine($"Solving puzzle for year {year} day {day}:");
 

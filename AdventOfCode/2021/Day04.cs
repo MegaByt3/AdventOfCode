@@ -5,7 +5,7 @@ using AdventOfCode;
 using AdventOfCode.Helpers;
 using Microsoft.Extensions.Logging;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day04
 {
     // https://adventofcode.com/2021/day/4
     public class Day04 : BaseDay

@@ -2,7 +2,7 @@
 using AdventOfCode;
 using AdventOfCode.Helpers;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day01
 {
     // https://adventofcode.com/2021/day/1
     public class Day01 : BaseDay

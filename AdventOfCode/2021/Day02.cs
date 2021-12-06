@@ -4,7 +4,7 @@ using System.Linq;
 using AdventOfCode;
 using AdventOfCode.Helpers;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day02
 {
     // https://adventofcode.com/2021/day/2
     public class Day02 : BaseDay
