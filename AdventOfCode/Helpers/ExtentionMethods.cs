@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Linq;
 
 namespace AdventOfCode.Helpers
 {
@@ -24,6 +26,13 @@ namespace AdventOfCode.Helpers
             var array = new int[1];
             bitarray.Reverse().CopyTo(array, 0);
             return array[0];
+        }
+
+        public static string SortString(this string input)
+        {
+            char[] characters = input.ToArray();
+            Array.Sort(characters);
+            return new string(characters);
         }
     }
 }
