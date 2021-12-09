@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using AdventOfCode;
 using AdventOfCode.Helpers;
 using Microsoft.Extensions.Logging;
 
-namespace AdventOfCode2021.Day08
+namespace AdventOfCode2021.Day09
 {
     // https://adventofcode.com/2021/day/9
     public class Day09 : BaseDay
@@ -16,7 +15,9 @@ namespace AdventOfCode2021.Day08
         public IInputManager InputManager { get; }
         public ILogger Logger { get; }
 
-        private List<(List<string> inputSegments, List<string> outputSegments)> _inputs = new List<(List<string>, List<string>)>();
+        private int[][] _inputs;
+        private int _horizontalSize;
+        private int _verticalSize;
 
         public Day09(IInputManager inputManager, ILogger logger)
         {
@@ -27,88 +28,113 @@ namespace AdventOfCode2021.Day08
 
         private void Init(string year, string day)
         {
-            var rawInputs = InputManager.GetInputs<string>(year, day);
-            var regex = new Regex(@"(\w+)");
+            var rawInputs = InputManager.GetInputNumbers(year, day);
+            _inputs = rawInputs;
 
-            foreach (var rawInput in rawInputs)
-            {
-                var matches = regex.Matches(rawInput);
-                var segments = matches.Select(x => x.Value).ToList();
-                segments = segments.Select(x => x.SortString()).ToList();
+            _horizontalSize = rawInputs[0].Length;
+            _verticalSize = rawInputs.Length;
 
-                var inputSegments = segments.Take(10).ToList();
-                var outputSegments = segments.Skip(10).ToList();
-                _inputs.Add((inputSegments, outputSegments));
-            }
-
-            Logger.LogDebug($"# inputs: {rawInputs.Count}");
+            Logger.LogDebug($"# inputs: [{_horizontalSize}][{_verticalSize}] => {_horizontalSize * _verticalSize}");
         }
 
-        // Part1 result: 416
+        // Part1 result: 500
         public override object SolvePart1()
-        {
-            var result = new List<int>();
-
-            foreach (var input in _inputs)
-            {
-                var codes = Decode(input.inputSegments);
-
-                foreach(var outputSegment in input.outputSegments)
-                {
-                    result.Add(codes.Single(x => x.Value.Equals(outputSegment)).Key);
-                }
-            }
-
-            return result.Count(x => x == 1 || x == 4 || x == 7 || x == 8);
-        }
-
-        // Part2 result: 1043697
-        public override object SolvePart2()
         {
             var result = 0;
 
-            foreach (var input in _inputs)
+            for (int i = 0; i < _verticalSize; i++)
             {
-                var codes = Decode(input.inputSegments);
-
-                var number = 0;
-                var devider = 1000;
-                foreach (var outputSegment in input.outputSegments)
+                for (int j = 0; j < _horizontalSize; j++)
                 {
-                    number += codes.Single(x => x.Value.Equals(outputSegment)).Key * devider;
-                    devider /= 10;
+                    var localLowPoint = LocalLowPoint((j, i));
+                    if (localLowPoint.isLocalLowPoint)
+                    {
+                        result += localLowPoint.height + 1;
+                    }
                 }
-
-                result += number;
             }
 
             return result;
         }
 
-        private Dictionary<int, string> Decode(List<string> inputSegments)
+        // Part2 result: 970200
+        public override object SolvePart2()
         {
-            var codes = new Dictionary<int, string>();
+            var result = new List<int>() { 0, 0, 0 };
 
-            codes.Add(1, inputSegments.Single(x => x.Length == 2));
-            codes.Add(4, inputSegments.Single(x => x.Length == 4));
-            codes.Add(7, inputSegments.Single(x => x.Length == 3));
-            codes.Add(8, inputSegments.Single(x => x.Length == 7));
+            for (int i = 0; i < _verticalSize; i++)
+            {
+                for (int j = 0; j < _horizontalSize; j++)
+                {
+                    var localLowPoint = LocalLowPoint((j, i));
+                    if (localLowPoint.isLocalLowPoint)
+                    {
+                        var oldPositions = new Dictionary<(int horizontal, int vertical), int>();
+                        var size = 1;
+                        oldPositions.Add((j, i), 0);
+                        CalculateBasin((j, i), ref oldPositions, ref size);
+                        result.Add(size);
+                        result.Remove(result.Min());
+                    }
+                }
+            }
 
-            var sixSegmentNumbers = inputSegments.Where(x => x.Length == 6).ToList();
-            codes.Add(6, sixSegmentNumbers.Single(x => x.Except(codes[1]).Count() == 5));
-            sixSegmentNumbers.Remove(codes[6]);
-            codes.Add(9, sixSegmentNumbers.Single(x => x.Except(codes[4]).Count() == 2));
-            sixSegmentNumbers.Remove(codes[9]);
-            codes.Add(0, sixSegmentNumbers.Single());
+            return result.Aggregate((a, x) => a * x);
+        }
 
-            var fiveSegmentNumbers = inputSegments.Where(x => x.Length == 5).ToList();
-            codes.Add(3, fiveSegmentNumbers.Single(x => x.Except(codes[1]).Count() == 3));
-            fiveSegmentNumbers.Remove(codes[3]);
-            codes.Add(5, fiveSegmentNumbers.Single(x => x.Except(codes[4]).Count() == 2));
-            fiveSegmentNumbers.Remove(codes[5]);
-            codes.Add(2, fiveSegmentNumbers.Single());
+        private (bool isLocalLowPoint, int height) LocalLowPoint((int horizontal, int vertical) position)
+        {
+            var currentHeight = _inputs[position.vertical][position.horizontal];
+            var adjacents = new List<((int horizontal, int vertical) position, int height)>();
 
-            return codes;
+            if (position.vertical != 0) adjacents.Add(((position.horizontal, position.vertical - 1), _inputs[position.vertical - 1][position.horizontal])); // up
+            if (position.vertical != _verticalSize - 1) adjacents.Add(((position.horizontal, position.vertical + 1), _inputs[position.vertical + 1][position.horizontal])); // down
+            if (position.horizontal != 0) adjacents.Add(((position.horizontal - 1, position.vertical), _inputs[position.vertical][position.horizontal - 1])); // left
+            if (position.horizontal != _horizontalSize - 1) adjacents.Add(((position.horizontal + 1, position.vertical), _inputs[position.vertical][position.horizontal + 1])); // right
+
+            var lowest = adjacents.First(x => x.height == adjacents.Select(x => x.height).Min());
+
+            return (lowest.height > currentHeight, currentHeight);
+        }
+
+        //private ((int horizontal, int vertical) position, int height) CalculateLocalLowPoint((int horizontal, int vertical) position)
+        //{
+        //    var currentHeight = _inputs[position.vertical][position.horizontal];
+        //    var adjacents = new List<((int horizontal, int vertical) position, int height)>();
+
+        //    if (position.vertical != 0) adjacents.Add(((position.horizontal, position.vertical - 1), _inputs[position.vertical - 1][position.horizontal])); // up
+        //    if (position.vertical != _verticalSize - 1) adjacents.Add(((position.horizontal, position.vertical + 1), _inputs[position.vertical + 1][position.horizontal])); // down
+        //    if (position.horizontal != 0) adjacents.Add(((position.horizontal - 1, position.vertical), _inputs[position.vertical][position.horizontal - 1])); // left
+        //    if (position.horizontal != _horizontalSize - 1) adjacents.Add(((position.horizontal + 1, position.vertical), _inputs[position.vertical][position.horizontal + 1])); // right
+
+        //    var lowest = adjacents.First(x => x.height == adjacents.Select(x => x.height).Min());
+
+        //    if (lowest.height < currentHeight)
+        //    {
+        //        return CalculateLocalLowPoint(lowest.position);
+        //    }
+
+        //    return (position, currentHeight);
+        //}
+
+        private void CalculateBasin((int horizontal, int vertical) position, ref Dictionary<(int horizontal, int vertical), int> oldPositions, ref int size)
+        {
+            var adjacents = new List<((int horizontal, int vertical) position, int height)>();
+
+            if (position.vertical != 0) adjacents.Add(((position.horizontal, position.vertical - 1), _inputs[position.vertical - 1][position.horizontal])); // up
+            if (position.vertical != _verticalSize - 1) adjacents.Add(((position.horizontal, position.vertical + 1), _inputs[position.vertical + 1][position.horizontal])); // down
+            if (position.horizontal != 0) adjacents.Add(((position.horizontal - 1, position.vertical), _inputs[position.vertical][position.horizontal - 1])); // left
+            if (position.horizontal != _horizontalSize - 1) adjacents.Add(((position.horizontal + 1, position.vertical), _inputs[position.vertical][position.horizontal + 1])); // right
+
+            foreach(var adjacent in adjacents.Where(x => x.height != 9))
+            {
+                if (!oldPositions.ContainsKey(adjacent.position))
+                {
+                    oldPositions.Add(adjacent.position, 0);
+                    size++;
+                    CalculateBasin(adjacent.position, ref oldPositions, ref size);
+                }
+            }
         }
     }
 }
