@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Text;
 
 namespace AdventOfCode.Helpers
 {
@@ -33,6 +34,18 @@ namespace AdventOfCode.Helpers
             char[] characters = input.ToArray();
             Array.Sort(characters);
             return new string(characters);
+        }
+
+        public static string Print(this int[][] inputs)
+        {
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                sb.AppendLine(string.Join("", inputs[i]));
+            }
+
+            return sb.ToString();
         }
     }
 }
