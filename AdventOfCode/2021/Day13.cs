@@ -74,7 +74,6 @@ namespace AdventOfCode2021.Day13
         // Part2 result: BLKJRBAG
         public override object SolvePart2()
         {
-            Init("2021", "13");
             foreach (var foldInstruction in _foldInstructions)
             {
                 Fold(foldInstruction);

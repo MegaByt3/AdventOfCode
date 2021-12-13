@@ -23,6 +23,8 @@ namespace AdventOfCode
         {
             var year = Configuration.GetValue<string>("PuzzleSelection:Year");
             var day = Configuration.GetValue<string>("PuzzleSelection:Day");
+            var part1 = Configuration.GetValue<bool>("PuzzleSelection:Parts:Part1");
+            var part2 = Configuration.GetValue<bool>("PuzzleSelection:Parts:Part2");
 
             var type = Type.GetType($"AdventOfCode{year}.Day{day}.Day{day}");
 
@@ -31,19 +33,30 @@ namespace AdventOfCode
             var sw = new Stopwatch();
             sw.Start();
 
-            var puzzle = (IDay)Activator.CreateInstance(type, InputManager, Logger);
+            if (part1)
+            {
+                var puzzle = (IDay)Activator.CreateInstance(type, InputManager, Logger);
 
-            Console.WriteLine($"Compute time initializing: {sw.Elapsed:c}");
-            sw.Restart();
+                Console.WriteLine($"Compute time initializing: {sw.Elapsed:c}");
+                sw.Restart();
 
-            var resultPart1 = puzzle.SolvePart1();
-            Console.WriteLine($"Part1 result: {resultPart1}");
-            Console.WriteLine($"Compute time part 1: {sw.Elapsed:c}");
-            sw.Restart();
+                var resultPart1 = puzzle.SolvePart1();
+                Console.WriteLine($"Part1 result: {resultPart1}");
+                Console.WriteLine($"Compute time part 1: {sw.Elapsed:c}");
+                sw.Restart();
+            }
 
-            var resultPart2 = puzzle.SolvePart2();
-            Console.WriteLine($"Part2 result: {resultPart2}");
-            Console.WriteLine($"Compute time part 2: {sw.Elapsed:c}");
+            if (part2)
+            {
+                var puzzle = (IDay)Activator.CreateInstance(type, InputManager, Logger);
+
+                Console.WriteLine($"Compute time initializing: {sw.Elapsed:c}");
+                sw.Restart();
+
+                var resultPart2 = puzzle.SolvePart2();
+                Console.WriteLine($"Part2 result: {resultPart2}");
+                Console.WriteLine($"Compute time part 2: {sw.Elapsed:c}");
+            }
             sw.Stop();
         }
     }
