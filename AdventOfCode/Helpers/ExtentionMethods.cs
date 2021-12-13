@@ -36,16 +36,36 @@ namespace AdventOfCode.Helpers
             return new string(characters);
         }
 
-        public static string Print(this int[][] inputs)
+        public static string Print<T>(this T[][] inputs, Func<T, string> convert)
         {
             var sb = new StringBuilder();
+            sb.Append("\n");
 
-            for (int i = 0; i < inputs.Length; i++)
+            for (int j = 0; j < inputs[0].Length; j++)
             {
-                sb.AppendLine(string.Join("", inputs[i]));
+                for (int i = 0; i < inputs.Length; i++)
+                {
+                    sb.Append(string.Join("", convert(inputs[i][j])));
+                }
+                sb.Append("\n");
             }
 
             return sb.ToString();
+        }
+
+        public static int Count<T>(this T[][] inputs, Func<T, bool> predicate)
+        {
+            var count = 0;
+
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                for (int j = 0; j < inputs[i].Length; j++)
+                {
+                    if (predicate(inputs[i][j])) count++;
+                }
+            }
+
+            return count;
         }
     }
 }
